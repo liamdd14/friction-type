@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Static vs Kinetic Friction Quiz</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            color: #333;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .quiz-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+        }
+
+        .quiz-instructions {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .quiz-content {
+            padding: 40px;
+        }
+
+        .question-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .question-number {
+            color: #4facfe;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #2d3748;
+        }
+
+        .answer-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .answer-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 25px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .answer-btn:hover {
+            border-color: #4facfe;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .answer-btn.selected {
+            border-color: #4facfe;
+            background: #4facfe;
+            color: white;
+        }
+
+        .answer-btn.correct {
+            border-color: #10b981;
+            background: #10b981;
+            color: white;
+        }
+
+        .answer-btn.incorrect {
+            border-color: #ef4444;
+            background: #ef4444;
+            color: white;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .feedback.correct {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        .feedback.incorrect {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .next-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .next-btn:hover {
+            background: #2563eb;
+        }
+
+        .next-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .results-card {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #4facfe;
+            margin: 20px 0;
+        }
+
+        .score-message {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #2d3748;
+        }
+
+        .restart-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: #059669;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+            
+            .quiz-content {
+                padding: 20px;
+            }
+            
+            .answer-options {
+                flex-direction: column;
+            }
+            
+            .answer-btn {
+                min-width: auto;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="quiz-container">
+   <div class="quiz-header">
+    <h1 class="quiz-title" id="quiz-title">Static vs Kinetic Friction Quiz</h1>
+    <p class="quiz-instructions" id="quiz-instructions">Determine whether each scenario involves static or kinetic friction. Remember: static friction acts on objects at rest or moving together, while kinetic friction acts on objects sliding relative to each other.</p>
+    <div class="progress-bar">
+     <div class="progress-fill" id="progress-fill"></div>
+    </div>
+   </div>
+   <div class="quiz-content">
+    <div id="question-container">
+     <div class="question-card">
+      <div class="question-number" id="question-number">
+       Question 1 of 15
+      </div>
+      <div class="question-text" id="question-text"></div>
+      <div class="answer-options"><button class="answer-btn" id="static-btn" onclick="selectAnswer('static')">Static Friction</button> <button class="answer-btn" id="kinetic-btn" onclick="selectAnswer('kinetic')">Kinetic Friction</button>
+      </div>
+      <div id="feedback" class="feedback hidden"></div><button class="next-btn hidden" id="next-btn" onclick="nextQuestion()">Next Question</button>
+     </div>
+    </div>
+    <div id="results-container" class="results-card hidden">
+     <h2>Quiz Complete! 🎉</h2>
+     <div class="score-display" id="final-score">
+      0/15
+     </div>
+     <div class="score-message" id="completion-message">
+      Great job learning about friction! Understanding the difference between static and kinetic friction is crucial in physics.
+     </div><button class="restart-btn" onclick="restartQuiz()">Take Quiz Again</button>
+    </div>
+   </div>
+  </div>
+  <script>
+        const defaultConfig = {
+            quiz_title: "Static vs Kinetic Friction",
+            instructions_text: "Determine whether each scenario involves static or kinetic friction. Remember: static friction acts on objects at rest or moving together, while kinetic friction acts on objects sliding relative to each other.",
+            completion_message: "Great job learning about friction! Understanding the difference between static and kinetic friction is crucial in physics."
+        };
+
+        const questions = [
+            {
+                text: "A book rests on a table. You push it gently, but it doesn't move.",
+                answer: "static",
+                explanation: "Static friction prevents the book from moving. The applied force is less than the maximum static friction force."
+            },
+            {
+                text: "A hockey puck slides across the ice after being hit.",
+                answer: "kinetic",
+                explanation: "Kinetic friction acts between the sliding puck and the ice surface as they move relative to each other."
+            },
+            {
+                text: "A car accelerates from rest without its wheels slipping on the road.",
+                answer: "static",
+                explanation: "Static friction between the tires and road provides the force needed for acceleration. The wheels roll without slipping."
+            },
+            {
+                text: "A heavy crate is pushed across a warehouse floor at constant speed.",
+                answer: "kinetic",
+                explanation: "Kinetic friction acts between the sliding crate and floor. At constant speed, the pushing force equals the kinetic friction force."
+            },
+            {
+                text: "You're walking on a sidewalk at constant speed.",
+                answer: "static",
+                explanation: "Static friction between your shoes and the sidewalk prevents slipping. Your feet don't slide relative to the ground."
+            },
+            {
+                text: "A block sits on a truck bed as the truck accelerates forward, and the block accelerates with the truck.",
+                answer: "static",
+                explanation: "Static friction provides the force needed to accelerate the block forward with the truck. No sliding occurs between block and truck bed."
+            },
+            {
+                text: "A sled being pulled across snow moves at constant velocity.",
+                answer: "kinetic",
+                explanation: "Kinetic friction acts between the sliding sled and snow. At constant velocity, the pulling force equals kinetic friction."
+            },
+            {
+                text: "A person stands on an escalator that is moving upward at constant speed.",
+                answer: "static",
+                explanation: "Static friction keeps the person moving with the escalator. There's no relative motion between the person and escalator surface."
+            },
+            {
+                text: "A coin placed on a turntable spins with the turntable without slipping.",
+                answer: "static",
+                explanation: "Static friction provides the centripetal force needed for circular motion. The coin doesn't slip relative to the turntable surface."
+            },
+            {
+                text: "A wooden block is dragged across a wooden floor at steady speed.",
+                answer: "kinetic",
+                explanation: "Kinetic friction acts as the block slides across the floor. The dragging force equals the kinetic friction force."
+            },
+            {
+                text: "A car goes around a curve at constant speed without skidding.",
+                answer: "static",
+                explanation: "Static friction between tires and road provides the centripetal force for circular motion. No skidding means no relative motion."
+            },
+            {
+                text: "A box on a conveyor belt moves with the belt as the belt speeds up.",
+                answer: "static",
+                explanation: "Static friction accelerates the box along with the conveyor belt. The box and belt move together without slipping."
+            },
+            {
+                text: "Ice skates glide across an ice rink.",
+                answer: "kinetic",
+                explanation: "Kinetic friction acts between the sliding skate blades and ice surface as they move relative to each other."
+            },
+            {
+                text: "A ladder leans against a wall, with a person climbing up it slowly.",
+                answer: "static",
+                explanation: "Static friction at both the base (with ground) and top (with wall) prevents the ladder from slipping as the person climbs."
+            },
+            {
+                text: "A pencil eraser is rubbed back and forth across paper to erase marks.",
+                answer: "kinetic",
+                explanation: "Kinetic friction acts between the moving eraser and paper surface as they slide relative to each other during the erasing motion."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        function updateUI() {
+            const config = window.elementSdk?.config || defaultConfig;
+            
+            document.getElementById('quiz-title').textContent = config.quiz_title || defaultConfig.quiz_title;
+            document.getElementById('quiz-instructions').textContent = config.instructions_text || defaultConfig.instructions_text;
+            document.getElementById('completion-message').textContent = config.completion_message || defaultConfig.completion_message;
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-number').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('question-text').textContent = question.text;
+            
+            // Reset buttons
+            document.getElementById('static-btn').className = 'answer-btn';
+            document.getElementById('kinetic-btn').className = 'answer-btn';
+            document.getElementById('feedback').className = 'feedback hidden';
+            document.getElementById('next-btn').className = 'next-btn hidden';
+            
+            selectedAnswer = null;
+            
+            // Update progress
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        function selectAnswer(answer) {
+            if (selectedAnswer) return; // Prevent multiple selections
+            
+            selectedAnswer = answer;
+            const question = questions[currentQuestion];
+            const isCorrect = answer === question.answer;
+            
+            // Update button styles
+            const staticBtn = document.getElementById('static-btn');
+            const kineticBtn = document.getElementById('kinetic-btn');
+            
+            if (answer === 'static') {
+                staticBtn.className = isCorrect ? 'answer-btn selected correct' : 'answer-btn selected incorrect';
+            } else {
+                kineticBtn.className = isCorrect ? 'answer-btn selected correct' : 'answer-btn selected incorrect';
+            }
+            
+            // Show correct answer if wrong
+            if (!isCorrect) {
+                if (question.answer === 'static') {
+                    staticBtn.className = 'answer-btn correct';
+                } else {
+                    kineticBtn.className = 'answer-btn correct';
+                }
+            }
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+            feedback.innerHTML = `
+                <strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong><br>
+                ${question.explanation}
+            `;
+            
+            // Show next button
+            document.getElementById('next-btn').className = 'next-btn';
+            document.getElementById('next-btn').textContent = currentQuestion === questions.length - 1 ? 'View Results' : 'Next Question';
+            
+            if (isCorrect) score++;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                showResults();
+            } else {
+                displayQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('question-container').className = 'hidden';
+            document.getElementById('results-container').className = 'results-card';
+            document.getElementById('final-score').textContent = `${score}/${questions.length}`;
+            
+            // Update progress to 100%
+            document.getElementById('progress-fill').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            
+            document.getElementById('question-container').className = '';
+            document.getElementById('results-container').className = 'results-card hidden';
+            
+            displayQuestion();
+        }
+
+        // Element SDK implementation
+        async function onConfigChange(config) {
+            updateUI();
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || "#4facfe",
+                        set: (value) => {
+                            config.primary_color = value;
+                            window.elementSdk.setConfig({ primary_color: value });
+                        }
+                    },
+                    {
+                        get: () => config.background_color || "#667eea",
+                        set: (value) => {
+                            config.background_color = value;
+                            window.elementSdk.setConfig({ background_color: value });
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || "Segoe UI",
+                    set: (value) => {
+                        config.font_family = value;
+                        window.elementSdk.setConfig({ font_family: value });
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || 16,
+                    set: (value) => {
+                        config.font_size = value;
+                        window.elementSdk.setConfig({ font_size: value });
+                    }
+                }
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["quiz_title", config.quiz_title || defaultConfig.quiz_title],
+                ["instructions_text", config.instructions_text || defaultConfig.instructions_text],
+                ["completion_message", config.completion_message || defaultConfig.completion_message]
+            ]);
+        }
+
+        // Initialize
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        // Start the quiz
+        displayQuestion();
+        updateUI();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99e6cd8897a0e608',t:'MTc2MzEyNjM5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
